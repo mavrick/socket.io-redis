@@ -1,6 +1,6 @@
 {
   "name": "socket.io-redis",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -12,7 +12,6 @@
   "dependencies": {
     "async": "1.5.0",
     "debug": "0.7.4",
-    "msgpack5": "3.2.0",
     "redis": "2.3.0",
     "socket.io-adapter": "automattic/socket.io-adapter#de5cba",
     "uid2": "0.0.3"

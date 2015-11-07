@@ -5,7 +5,6 @@
 
 var uid2 = require('uid2');
 var redis = require('redis').createClient;
-var msgpack = require('msgpack5')();
 var Adapter = require('socket.io-adapter');
 var Emitter = require('events').EventEmitter;
 var debug = require('debug')('socket.io-redis');
@@ -71,7 +70,8 @@ function adapter(uri, opts){
     this.subClient = sub;
 
     var self = this;
-    sub.subscribe(prefix + '#' + nsp.name + '#', function(err){
+    var name = prefix + '#' + nsp.name + '#';
+    sub.subscribe(name, function(err){
       if (err) self.emit('error', err);
     });
     sub.on('message', this.onmessage.bind(this));
@@ -90,7 +90,8 @@ function adapter(uri, opts){
    */
 
   Redis.prototype.onmessage = function(channel, msg){
-    var args = msgpack.decode(msg);
+
+    var args = JSON.parse(msg);
     var packet;
 
     if (uid == args.shift()) return debug('ignore same uid');
@@ -125,12 +126,12 @@ function adapter(uri, opts){
       if (opts.rooms) {
         opts.rooms.forEach(function(room) {
           var chn = prefix + '#' + packet.nsp + '#' + room + '#';
-          var msg = msgpack.encode([uid, packet, opts]);
+          var msg = JSON.stringify([uid, packet, opts]);
           pub.publish(chn, msg);
         });
       } else {
         var chn = prefix + '#' + packet.nsp + '#';
-        var msg = msgpack.encode([uid, packet, opts]);
+        var msg = JSON.stringify([uid, packet, opts]);
         pub.publish(chn, msg);
       }
     }
